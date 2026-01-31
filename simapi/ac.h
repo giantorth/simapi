@@ -12,6 +12,7 @@
 #define AC_STATIC_FILE "acpmf_static"
 #define AC_GRAPHIC_FILE "acpmf_graphics"
 #define AC_CREWCHIEF_FILE "acpmf_crewchief"
+#define AC_SIMHUB_FILE "acpmf_simhub_v2"
 
 typedef struct
 {
@@ -19,18 +20,22 @@ typedef struct
     bool has_static;
     bool has_graphic;
     bool has_crewchief;
+    bool has_simhub;
     void* physics_map_addr;
     void* static_map_addr;
     void* graphic_map_addr;
     void* crewchief_map_addr;
+    void* simhub_map_addr;
     int fd_physics;
     int fd_static;
     int fd_graphic;
     int fd_crewchief;
+    int fd_simhub;
     struct SPageFilePhysics ac_physics;
     struct SPageFileStatic ac_static;
     struct SPageFileGraphic ac_graphic;
     struct SPageFileCrewChief ac_crewchief;
+    struct SPageFileSimHub ac_simhub;
     char car[32];
     char driver[32];
     char track[32];
