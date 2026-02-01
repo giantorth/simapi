@@ -603,6 +603,12 @@ void gamefindcallback(uv_timer_t* handle)
                     y_log_message(Y_LOG_LEVEL_DEBUG, "Could not fork a bridge process");
                 }
             }
+            else
+            {
+                y_log_message(Y_LOG_LEVEL_WARNING, "Bridge setup failed, continuing without bridge.");
+                uv_timer_start(&datachecktimer, datacheckcallback, 0, 1000);
+                uv_timer_stop(handle);
+            }
         }
         else
         {
