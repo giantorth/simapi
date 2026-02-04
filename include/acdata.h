@@ -9,7 +9,6 @@
 #define AC_GRAPHIC_SIZE   2048
 #define AC_STATIC_SIZE    2048
 #define AC_CREWCHIEF_SIZE 16000
-#define AC_SIMHUB_SIZE    32000
 
 typedef int AC_STATUS;
 #define AC_OFF 0
@@ -374,18 +373,6 @@ struct SPageFileCrewChief
     int focuseVehicle;
     char serverName[512];
     acsVehicleInfo vehicle[64];
-    char acInstallPath[512];
-    int isInternalMemoryModuleLoaded;
-    char pluginVersion[32];
-};
-
-
-struct SPageFileSimHub
-{
-    int numVehicles;
-    int focuseVehicle;
-    char serverName[512];
-    acsVehicleInfo vehicle[128];
     char acInstallPath[512];
     int isInternalMemoryModuleLoaded;
     char pluginVersion[32];
