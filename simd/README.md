@@ -1,49 +1,60 @@
 # simd
 
-cross sim telemetry mapping daemon.
+Cross-sim telemetry mapping daemon.
 
-This daemon will automatically detect the currently running simulator, (RFactor2, Acs/ACC, Automobilista 2), and map the current telemetry
-data ( speed, gear, rpms, etc ) into a common memory mapped file for use in other programs such as monocoque or simmonitor. The memory
-mapped filed can be found at /dev/shm/SIMAPI.DAT.
+This daemon automatically detects the currently running simulator and maps its telemetry data (speed, gear, RPMs, etc.) into a common memory mapped file for use by other programs such as monocoque or simmonitor. The output is written to `/dev/shm/SIMAPI.DAT`.
 
-## Supported Games ( see [simapi](https://github.com/spacefreak18/simapi) for more details of what is supported from each sim )
+## Supported Games
+
+See [supported sims](docs/supportedsims.md) for the full list of supported simulators and their feature levels. Currently 16+ titles are supported including Assetto Corsa, RFactor 2, Automobilista 2, LeMans Ultimate, Richard Burns Rally, Wreckfest 2, and more.
 
 ## Dependencies
-- yder - logging
-- simapi.so
-- libuv base event loop
-- argtable2
+
+- [simapi](https://github.com/spacefreak18/simapi) (libsimapi.so)
+- [libuv](https://libuv.org/) - event loop
+- [yder](https://github.com/babelouest/yder) - logging
+- [libconfig](https://hyperrealm.github.io/libconfig/) - configuration parsing
+- argtable3 or argtable2 - CLI argument parsing
 
 ## Building
 
-simd and simapi are both available in the [AUR](https://aur.archlinux.org/packages/simd-git)
-be sure to install [simapi](https://aur.archlinux.org/packages/simapi-git) first
+simd and simapi are both available in the [AUR](https://aur.archlinux.org/packages/simd-git).
+Be sure to install [simapi](https://aur.archlinux.org/packages/simapi-git) first.
 
-To build first compile and install simapi using the instructions at the root of the repo, then compile simd with cmake:
+To build manually, first compile and install simapi using the instructions at the root of the repo, then compile simd with cmake:
+
 ```bash
 cmake -B build
 cmake --build build
 ```
 
-## User-Level Installation
+## Installation
 
-To install simd as a user-level systemd service:
+### System-wide
 
 ```bash
-# Build and install to ~/.local (includes binary, service file, and config)
+sudo cmake --install build
+```
+
+### User-level (recommended)
+
+```bash
 cmake -B build -DCMAKE_INSTALL_PREFIX=$HOME/.local
 cmake --build build
 cmake --install build
-
-# Reload systemd user daemon and enable the service
-systemctl --user daemon-reload
-systemctl --user enable --now simd
 ```
 
 This installs:
 - Binary to `~/.local/bin/simd`
 - Systemd service to `~/.config/systemd/user/simd.service`
 - Config file to `~/.config/simd/simd.config`
+
+To enable as a systemd user service:
+
+```bash
+systemctl --user daemon-reload
+systemctl --user enable --now simd
+```
 
 To manage the service:
 ```bash
@@ -61,8 +72,9 @@ cmake -B build -DCMAKE_INSTALL_PREFIX=$HOME/.local \
 ```
 
 ## Usage
-if you wish to use the automatic bridging mode, first copy the config file from [here](https://github.com/Spacefreak18/simapi/blob/master/simd/conf/simd.config) to ~/.config/simd/simd.config and add the appropriate
-[bridge](https://github.com/spacefreak18/simshmbridge) exe to your steam launch command like this:
+
+If you wish to use the automatic bridging mode, first copy the config file from [here](https://github.com/Spacefreak18/simapi/blob/master/simd/conf/simd.config) to `~/.config/simd/simd.config` and add the appropriate [bridge](https://github.com/spacefreak18/simshmbridge) exe to your Steam launch command:
+
 ```
 SIMD_BRIDGE_EXE=~/path/to/acbridge.exe %command%
 ```
@@ -71,27 +83,19 @@ or
 SIMD_BRIDGE_EXE=~/path/to/pcars2bridge.exe %command%
 ```
 
+To run in foreground with verbose logging (recommended for testing):
 ```
 simd --nodaemon --nomemmap -vv
 ```
-or simply
+
+To run as a daemon:
 ```
 simd
 ```
-if you get an error like ``` simd: error while loading shared libraries: libsimapi.so.1: cannot open shared object file: No such file or directory ```
-run this command first
-```
+
+If you get an error like `simd: error while loading shared libraries: libsimapi.so.1: cannot open shared object file: No such file or directory`, run:
+```bash
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ```
 
-simd has a built in work around to automatically create memory mapped files for assetto corsa and project cars 2 based sims, so a workaround
-such as createsim isn't needed, but a helper process running in the wine/proton environment such as simshmbridge.exe is still needed. The
-nomemmap (-h) option disables this workaround.
-
-The nodaemon option (-n) disables daemon mode so the process does not fork. And verbose (-v) increases logging verbosity.
-
-for more information on [simd usage](https://spacefreak18.github.io/simapi/simd)
-
-
-## ToDo
- - much, much more
+For more information see the [simd usage documentation](https://spacefreak18.github.io/simapi/simd).

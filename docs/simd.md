@@ -1,22 +1,34 @@
 # simd
-To jump right into how to use simd visit this [page](https://spacefreak18.github.io/simapi/simd_usage).
 
-Applications such as monocoque and simmonitor, being sim-agnostic in nature, require some sort of
-common mapping of the telemetry the different titles are making available.
+To jump right into how to use simd visit the [usage page](https://spacefreak18.github.io/simapi/simd_usage).
 
-This is where simd comes in, a separate process to consolidate the available data from any running sim
-into a standardized data format.
+## Overview
 
-Running on Linux natively also presents it's own set of challenges. Many titles make use of shared memory
-mapped files, which wine does not make easily available for consumption outside of the same running 
-wine prefix.
+simd is the SimAPI daemon - a background process that automatically detects running racing simulators and maps their telemetry data into a standardized shared memory format (`/dev/shm/SIMAPI.DAT`).
 
-By default simd contains extra compatibility for these workarounds. Such as automatically running a 
-defined bridge process from the simshmbridge process.
+Applications such as monocoque and simmonitor are sim-agnostic, meaning they need a common data format regardless of which simulator is running. simd handles the translation from each simulator's native telemetry format into the unified SimData structure.
 
-Each sim title has its own set of steps to setup telemetry. For that list see this page.
+## What simd Does
 
-simd also provides functionality to arbitrarily set common simdata, to test functionality of devices
-and displays in monocoque and simmonitor respectively. See [poke](simd_poke).
+- Automatically detects which simulator is running by monitoring processes
+- Reads telemetry via shared memory or UDP depending on the simulator
+- Maps simulator-specific data into the standardized SimData format
+- Manages bridge processes for sims that require Wine/Proton shared memory workarounds
+- Writes consolidated telemetry to `/dev/shm/SIMAPI.DAT`
 
-simd also allows fine grained control over the start of memory mapping through the use of [the simd.conf](https://github.com/Spacefreak18/simapi/blob/master/simd/conf/simd.config) file.
+## Linux Shared Memory Challenges
+
+Running on Linux natively presents challenges. Many titles use shared memory mapped files, which Wine/Proton does not make easily available for consumption outside of the running Wine prefix.
+
+simd contains built-in workarounds for this, such as automatically running bridge processes from [simshmbridge](https://github.com/spacefreak18/simshmbridge). Sims that support native DLL plugins (RFactor 2, LeMans Ultimate, truck simulators) can bypass this limitation entirely.
+
+## Additional Features
+
+- **Poke mode** - Arbitrarily set SimData fields for testing devices and displays without a running sim. See [simd poke](https://spacefreak18.github.io/simapi/simd_poke).
+- **Configuration file** - Fine-grained control over simulator detection and bridge process management through [simd.config](https://github.com/Spacefreak18/simapi/blob/master/simd/conf/simd.config).
+- **Systemd integration** - Can run as a user-level systemd service for automatic startup.
+- **Desktop notifications** - Optional notifications when simulators are detected (can be disabled with `--nonotify`).
+
+## Supported Simulators
+
+See the full [supported simulators](https://spacefreak18.github.io/simapi/supportedsims) page for the compatibility matrix. simd supports 16+ simulator titles across shared memory and UDP protocols.

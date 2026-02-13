@@ -1,36 +1,42 @@
 # simd poke
 
-simd has a mode that allows setting (or "poking") arbitrary simdata fields.
-This feature is still new and highly experimental.
+simd has a mode that allows setting (or "poking") arbitrary SimData fields. This is useful for testing devices and displays in monocoque or simmonitor without needing a running simulator.
 
-The daemon must already be running for this to work.
+The simd daemon must already be running for poke to work.
 
-The command example looks like this:
+## Activating test data
 
+To start sending test data, two fields must be set:
 
-```
+```bash
 simd -p SimData_simstatus -t 2
 simd -p SimData_simon -t 1
-
 ```
 
-Those two fields must be set before monocoque or simmonitor detects running data.
+Both fields must be set before monocoque or simmonitor will detect active data.
 
-Then to stop the running data run these two commands:
+## Setting telemetry values
 
+Once active, you can set any SimData field:
+
+```bash
+# Set speed (km/h)
+simd -p SimData_velocity -t 185
+
+# Set RPMs
+simd -p SimData_rpms -t 7500
+
+# Set gear
+simd -p SimData_gear -t 4
 ```
+
+The naming scheme is `SimData_[fieldname]` where fieldname corresponds to fields defined in `simdata.h`.
+
+## Stopping test data
+
+To stop the simulated data:
+
+```bash
 simd -p SimData_simstatus -t 0
 simd -p SimData_simon -t 0
-
 ```
-
-Other examples, like setting speed
-```
-simd -p SimData_velocity -t 185
-```
-Setting rpms
-```
-simd -p SimData_rpms -t 7500
-```
-
-The same basic scheme of SimData_[fieldname] should work for all fields in simdata.h
